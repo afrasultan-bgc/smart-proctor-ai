@@ -1,0 +1,1 @@
+export default function StudentExam() { return <div>Sınav Sayfası</div> }
