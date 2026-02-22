@@ -1,17 +1,22 @@
+import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from app.core.config import settings
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
 
-# Veritabanı motorunu oluşturuyoruz
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)
+# .env dosyasındaki şifreleri yükle
+load_dotenv()
 
-# Her istek geldiğinde yeni bir oturum açacak fabrika
+# Veritabanı URL'sini al
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Motoru çalıştır
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Tüm tablolarımızın türeyeceği temel sınıf
 Base = declarative_base()
 
-# Dependency (Bağımlılık): İşi biten veritabanı bağlantısını kapatır
+# Veritabanı bağlantı seansı oluşturan fonksiyon
 def get_db():
     db = SessionLocal()
     try:
