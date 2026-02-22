@@ -1,10 +1,10 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Smart Proctor AI"
     API_V1_STR: str = "/api/v1"
     
-    # DİKKAT: Şifren 12345 ise burası kalsın. Değilse düzelt.
+    # Varsayılan değerler (Eğer .env dosyası varsa oradakiler geçerli olur)
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "12345"
     POSTGRES_SERVER: str = "localhost"
@@ -15,7 +15,11 @@ class Settings(BaseSettings):
     def SQLALCHEMY_DATABASE_URI(self) -> str:
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
-    class Config:
-        case_sensitive = True
+    # Yeni nesil Pydantic konfigürasyonu
+    model_config = SettingsConfigDict(
+        case_sensitive=True, 
+        env_file=".env",     # .env dosyasını otomatik oku
+        extra="ignore"       # Fazladan değişken varsa hata verme
+    )
 
 settings = Settings()
