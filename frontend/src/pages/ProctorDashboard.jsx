@@ -1,1 +1,1 @@
-export default function StudentExam() { return <div>Sınav Sayfası</div> }
+export default function ProctorDashboard() { return <div>Gözetmen Paneli</div> }
