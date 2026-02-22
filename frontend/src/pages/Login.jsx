@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
 
 function Login() {
@@ -84,7 +84,8 @@ function Login() {
           </button>
         </form>
 
-        <p className="mt-4 text-center text-xs text-gray-400">
+        <p className="mt-4 text-center text-sm text-gray-500">
+          Hesabın yok mu? <Link to="/register" className="text-indigo-600 hover:underline">Kayıt Ol</Link>
           © 2026 Smart Proctor AI
         </p>
       </div>

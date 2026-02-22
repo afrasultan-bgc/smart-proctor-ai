@@ -4,11 +4,12 @@ import StudentDashboard from './pages/StudentDashboard';
 import StudentExam from './pages/StudentExam';
 import ProctorDashboard from './pages/ProctorDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
-
+import Register from './pages/Register';
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/register" element={<Register />} />
         <Route path="/" element={<Login />} />
 
         <Route path="/dashboard" element={
