@@ -4,6 +4,10 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Smart Proctor AI"
     API_V1_STR: str = "/api/v1"
     
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    
     # Varsayılan değerler (Eğer .env dosyası varsa oradakiler geçerli olur)
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "12345"
