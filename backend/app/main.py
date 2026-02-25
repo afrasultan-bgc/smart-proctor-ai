@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.api import api_router # 
-from app.routers import auth
+from app.routers import auth, general, exam
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -28,8 +27,9 @@ app.add_middleware(
 )
 
 # API Rotaları (V1 sürümü altında toplanır) 
-app.include_router(api_router, prefix=settings.API_V1_STR)
 app.include_router(auth.router)
+app.include_router(general.router)
+app.include_router(exam.router)
 
 @app.get("/", tags=["Health Check"]) # Tags eklemek Swagger dökümanını gruplandırır
 def root():

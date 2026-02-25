@@ -17,15 +17,37 @@ function Register() {
     setSuccess('');
     setLoading(true);
 
-    try {
-      // GEÇİCİ: Backend hazır olunca API çağrısı olacak
-      // const response = await api.post('/register', { name, email, password, role });
+    // Backend'in beklediği verileri hazırlıyoruz (Schema ile uyumlu olmalı)
+    const userData = {
+      full_name: name, // Senin backend'in (schemas.py) büyük ihtimalle "full_name" bekliyor
+      email: email,
+      password: password,
+      role: role
+    };
 
-      setSuccess('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...');
-      setTimeout(() => navigate('/'), 2000);
+    try {
+      // DİKKAT: Backend'de yeni kullanıcı oluşturma adresin "/users/" veya "/auth/register" olabilir.
+      // Swagger'a bakarak burayı düzeltmen gerekebilir. Ben standart bir yapıya göre yazıyorum:
+      const response = await fetch('http://localhost:8000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...');
+        setTimeout(() => navigate('/'), 2000);
+      } else {
+        // E-posta zaten kullanımdaysa vb. hatalar
+        setError(data.detail || 'Kayıt başarısız!');
+      }
 
     } catch (err) {
-      setError(err.response?.data?.detail || 'Kayıt başarısız!');
+      setError('Sunucuya ulaşılamadı. Lütfen backend bağlantısını kontrol edin.');
     } finally {
       setLoading(false);
     }

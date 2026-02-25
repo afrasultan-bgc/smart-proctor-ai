@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from app.db.database import Base
 import app.models.user  # Modellerimizi buraya ekliyoruz
+import app.models.exam
 
 # .env dosyasından veritabanı şifresini çekiyoruz
 load_dotenv()

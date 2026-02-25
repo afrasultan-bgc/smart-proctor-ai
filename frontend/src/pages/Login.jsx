@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../api/axios';
+// Eğer api/axios dosyası ayarlıysa onu kullanırız ama şimdilik standart fetch veya importlu axios kullanabiliriz.
+// Zeynep'in import ettiği api'yi kullanıyoruz.
+import api from '../api/axios'; 
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -15,26 +17,41 @@ function Login() {
     setLoading(true);
 
     try {
-      // GEÇİCİ: Backend hazır olunca burası API çağrısı olacak
-      let role = '';
-      if (email.includes('student')) role = 'student';
-      else if (email.includes('proctor')) role = 'proctor';
-      else if (email.includes('instructor')) role = 'instructor';
-      else {
-        setError('Test için: student@test.com, proctor@test.com veya instructor@test.com kullanın');
-        setLoading(false);
-        return;
+      // 1. FastAPI'nin beklediği formatta (Form Data) veriyi hazırlıyoruz
+      const formData = new URLSearchParams();
+      formData.append('username', email); // FastAPI e-postayı username olarak bekler
+      formData.append('password', password);
+
+      // 2. Senin Backend'ine gerçek isteği atıyoruz
+      const response = await api.post('http://localhost:8000/auth/login', formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+
+      // 3. Backend'den gelen Token'ı ve bilgileri alıyoruz
+      const data = response.data;
+      
+      // Token'ı tarayıcıya (Local Storage) kaydediyoruz
+      localStorage.setItem('token', data.access_token);
+      
+      // Şimdilik rolleri backend'den almadığımız için geçici bir yönlendirme yapıyoruz
+      // (İleride backend'den kullanıcının rolü gelince burayı güncelleyeceğiz)
+      if (email.includes('instructor')) {
+        navigate('/instructor');
+      } else if (email.includes('proctor')) {
+        navigate('/proctor');
+      } else {
+        navigate('/dashboard'); // Standart öğrenci/kullanıcı girişi
       }
 
-      localStorage.setItem('token', 'mock-token-12345');
-      localStorage.setItem('role', role);
-
-      if (role === 'student') navigate('/dashboard');
-      else if (role === 'instructor') navigate('/instructor');
-      else if (role === 'proctor') navigate('/proctor');
-
     } catch (err) {
-      setError('Giriş başarısız!');
+      // Backend'den gelen 401 veya 403 hatasını (Yanlış şifre vb.) yakalayıp ekrana basıyoruz
+      if (err.response && err.response.data && err.response.data.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError('Giriş başarısız! Sunucuya bağlanılamadı.');
+      }
     } finally {
       setLoading(false);
     }
@@ -60,7 +77,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="ogrenci@univ.edu.tr"
+              placeholder="ornek@univ.edu.tr"
               required
             />
           </div>
@@ -86,7 +103,7 @@ function Login() {
 
         <p className="mt-4 text-center text-sm text-gray-500">
           Hesabın yok mu? <Link to="/register" className="text-indigo-600 hover:underline">Kayıt Ol</Link>
-          © 2026 Smart Proctor AI
+          <br/>© 2026 Smart Proctor AI
         </p>
       </div>
     </div>
