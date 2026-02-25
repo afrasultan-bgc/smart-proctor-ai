@@ -92,6 +92,14 @@ def get_current_instructor(current_user: User = Depends(get_current_user)):
             detail="Bu işlemi yapmak için Eğitmen (Instructor) yetkisine sahip olmalısınız."
         )
     return current_user
+    def get_current_proctor(current_user: User = Depends(get_current_user)):
+     """Giriş yapan kullanıcının Gözetmen (Proctor) olup olmadığını kontrol eder."""
+    if current_user.role != "proctor":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Erişim reddedildi! Bu işlem için Gözetmen (Proctor) yetkisi gereklidir."
+        )
+    return current_user
   
 @router.put("/change-password", tags=["Profil Yönetimi"])
 def change_password(
